@@ -1,0 +1,6 @@
+/home/filosofem/tinyrenderer/build/CMakeFiles/renderer_core.dir
+/home/filosofem/tinyrenderer/build/CMakeFiles/my_renderer.dir
+/home/filosofem/tinyrenderer/build/CMakeFiles/my_viewer.dir
+/home/filosofem/tinyrenderer/build/CMakeFiles/video.dir
+/home/filosofem/tinyrenderer/build/CMakeFiles/edit_cache.dir
+/home/filosofem/tinyrenderer/build/CMakeFiles/rebuild_cache.dir

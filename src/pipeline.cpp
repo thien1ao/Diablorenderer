@@ -2,12 +2,11 @@
 #include <algorithm>
 #include <cmath>
 
-// state machine realisation
 mat<4,4> ModelView, Viewport, Perspective;
 std::vector<double> zbuffer;
 
-vec3 rot(const vec3 v, const double a) {
-    return {std::cos(a)*v.x + std::sin(a)*v.z, v.y, -std::sin(a)*v.x + std::cos(a)*v.z};
+vec4 rot(const vec4 v, const double a) {
+    return {std::cos(a)*v.x + std::sin(a)*v.z, v.y, -std::sin(a)*v.x + std::cos(a)*v.z, v.w};
 }
 
 void lookat(const vec3 eye, const vec3 center, const vec3 up) {
@@ -39,18 +38,36 @@ void rasterize(const Triangle &clip, const IShader &shader, TGAImage &framebuffe
 
     auto [bbminx,bbmaxx] = std::minmax({screen[0].x, screen[1].x, screen[2].x});
     auto [bbminy,bbmaxy] = std::minmax({screen[0].y, screen[1].y, screen[2].y});
+    const mat<3,3> ABCit = ABC.invert_transpose(); // same for every pixel of the triangle
 #pragma omp parallel for
     for (int x=std::max<int>(bbminx, 0); x<=std::min<int>(bbmaxx, framebuffer.width()-1); x++) {
         for (int y=std::max<int>(bbminy, 0); y<=std::min<int>(bbmaxy, framebuffer.height()-1); y++) {
-            vec3 bc = ABC.invert_transpose() * vec3{static_cast<double>(x), static_cast<double>(y), 1.}; // barycentric coordinates of {x,y} w.r.t the triangle
+            vec3 bc = ABCit * vec3{static_cast<double>(x), static_cast<double>(y), 1.};
             if (bc.x<0 || bc.y<0 || bc.z<0) continue;
-            double z = bc * vec3{ ndc[0].z, ndc[1].z, ndc[2].z };  // linear interpolation of the depth
-            if (z <= zbuffer[x+y*framebuffer.width()]) continue;   // discard fragments that are too deep w.r.t the z-buffer
+            double z = bc * vec3{ ndc[0].z, ndc[1].z, ndc[2].z };
+            if (z <= zbuffer[x+y*framebuffer.width()]) continue;
             auto [discard, color] = shader.fragment(bc);
-            if (discard) continue;                                 // fragment shader can discard current fragment
-            zbuffer[x+y*framebuffer.width()] = z;                  // update the z-buffer
-            framebuffer.set(x, y, color);                          // update the framebuffer
+            if (discard) continue;
+            zbuffer[x+y*framebuffer.width()] = z;
+            framebuffer.set(x, y, color);
         }
     }
 }
 
+void line(const vec4 a, const vec4 b, const TGAColor color, TGAImage &framebuffer) {
+    vec4 ca = Perspective*a, cb = Perspective*b;
+    if (ca.w <= 0 || cb.w <= 0) return; // behind the camera
+    vec4 na = ca/ca.w, nb = cb/cb.w;
+    vec2 sa = (Viewport*na).xy(), sb = (Viewport*nb).xy();
+    // one step per pixel along the longer axis
+    int steps = std::max(1, static_cast<int>(std::ceil(std::max(std::abs(sb.x-sa.x), std::abs(sb.y-sa.y)))));
+    for (int s=0; s<=steps; s++) {
+        double t = s/static_cast<double>(steps);
+        int x = static_cast<int>(std::round(sa.x + (sb.x-sa.x)*t));
+        int y = static_cast<int>(std::round(sa.y + (sb.y-sa.y)*t));
+        if (x<0 || y<0 || x>=framebuffer.width() || y>=framebuffer.height()) continue;
+        double z = na.z + (nb.z-na.z)*t;
+        if (z < zbuffer[x+y*framebuffer.width()] - .01) continue; // small margin: the segment starts on the surface itself
+        framebuffer.set(x, y, color);
+    }
+}

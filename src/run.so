@@ -1,2 +1,0 @@
-g++ -O2 -fopenmp my_renderer.cpp tgaimage.cpp my_model.cpp -o a_out
-/usr/bin/ffmpeg -framerate 30 -i frames/frame_%03d.tga -c:v libx264 -pix_fmt yuv420p out.mp4

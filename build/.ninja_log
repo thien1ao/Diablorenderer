@@ -1,0 +1,22 @@
+# ninja log v5
+2	415	1792860531048669436	CMakeFiles/renderer_core.dir/src/pipeline.cpp.o	325dcf39302407ad
+2	2052	0	CMakeFiles/video	ac43d90651e049fb
+1023	1071	1792860531704667000	my_viewer	ff57bfd611cae146
+2	1023	1792860531656667178	CMakeFiles/my_viewer.dir/src/viewer.cpp.o	3e7bf8de74fa8fe0
+536	575	1792860531208668842	my_renderer	60f71aad713f174d
+2	2052	0	/home/filosofem/tinyrenderer/build/CMakeFiles/video	ac43d90651e049fb
+2	400	1792853049503689849	CMakeFiles/my_renderer.dir/src/pipeline.cpp.o	f906b0854a373633
+2	536	1792860531170668983	CMakeFiles/my_renderer.dir/src/my_renderer.cpp.o	d34603053b036fdc
+415	440	1792860531073669344	librenderer_core.a	b4a4a5b6586ffbae
+2	347	1792853466929274560	CMakeFiles/renderer_core.dir/src/tgaimage.cpp.o	72b4b361b2fe8a06
+2	465	1792853294873002467	CMakeFiles/my_renderer.dir/src/my_model.cpp.o	c77c7d8478e04c30
+2	486	1792859915301247109	CMakeFiles/renderer_core.dir/src/my_model.cpp.o	8739473098dec531
+1	350	1792840941709457690	CMakeFiles/my_renderer.dir/src/tgaimage.cpp.o	ee5830e263f0ed3c
+1	19	1792863435980296730	build.ninja	388b9ec116ee48bc
+1	19	1792863435980296730	/home/filosofem/tinyrenderer/build/cmake_install.cmake	388b9ec116ee48bc
+1	413	1792863436395294903	CMakeFiles/renderer_core.dir/src/pipeline.cpp.o	325dcf39302407ad
+413	438	1792863436420294793	librenderer_core.a	b4a4a5b6586ffbae
+1	527	1792863436509294402	CMakeFiles/my_renderer.dir/src/my_renderer.cpp.o	d34603053b036fdc
+527	567	1792863436548294230	my_renderer	60f71aad713f174d
+567	2713	0	CMakeFiles/video	ac43d90651e049fb
+567	2713	0	/home/filosofem/tinyrenderer/build/CMakeFiles/video	ac43d90651e049fb
