@@ -36,11 +36,5 @@ by Dmitry Sokolov (ssloy), extended with an interactive SDL2 viewer.
 | N | Toggle vertex normal visualization |
 | Escape | Exit |
 
-## Acknowledgments
-
-Based on the [Tiny Renderer](https://github.com/ssloy/tinyrenderer)
-educational project by Dmitry Sokolov.
-
-
 
 
