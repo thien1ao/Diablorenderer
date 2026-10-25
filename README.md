@@ -8,7 +8,7 @@ A software renderer implemented in C++ by following the
 <table>
   <tr>
     <th>Phong Shading</th>
-    <th>Wireframe Overlay</th>
+    <th>Triangle Mesh</th>
   </tr>
   <tr>
     <td>
@@ -19,8 +19,8 @@ A software renderer implemented in C++ by following the
     </td>
   </tr>
   <tr>
-    <th>Vertex Normals</th>
-    <th>Shadow Mapping</th>
+    <th>Normals Rendering</th>
+    <th>Texture Rendering</th>
   </tr>
   <tr>
     <td>
