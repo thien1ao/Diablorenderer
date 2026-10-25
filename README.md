@@ -12,8 +12,6 @@ by Dmitry Sokolov (ssloy), extended with an interactive SDL2 viewer.
 - Vertex normal visualization
 - White-material mode for inspecting lighting
 
-## Gallery
-
 ### Textured Rendering
 
 <img src="assets/texture.png" alt="Textured model with Phong lighting and normal mapping" width="700">
@@ -25,16 +23,6 @@ by Dmitry Sokolov (ssloy), extended with an interactive SDL2 viewer.
 ### Normal Visualization
 
 <img src="assets/normals.png" alt="Model with vertex normals displayed as red line segments" width="700">
-
-## Controls
-
-| Input | Action |
-|-------|--------|
-| Left mouse button + drag | Orbit the camera |
-| W | Toggle wireframe overlay |
-| T | Toggle white-material mode |
-| N | Toggle vertex normal visualization |
-| Escape | Exit |
 
 
 
