@@ -5,36 +5,42 @@ A software renderer implemented in C++ by following the
 
 ## Progress
 
+## Progress
+
 <table>
   <tr>
-    <th>Textured Rendering</th>
+    <th>Phong Shading</th>
     <th>Wireframe Overlay</th>
   </tr>
   <tr>
     <td>
-      <img src="assets/default.png" alt="Textured model with Phong lighting" width="400">
+      <img src="assets/default.png" alt="Model rendered with Phong shading" width="400">
     </td>
     <td>
       <img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="400">
     </td>
   </tr>
   <tr>
-    <th>Vertex Normal Visualization</th>
-    <th>Point Cloud View</th>
+    <th>Vertex Normals</th>
+    <th>Shadow Mapping</th>
   </tr>
   <tr>
     <td>
-      <img src="assets/normals.png" alt="Model with vertex normals displayed" width="400">
+      <img src="assets/normals.png" alt="Vertex normals displayed as line segments" width="400">
     </td>
     <td>
-      <img src="assets/points.png" alt="Model vertices displayed as a point cloud" width="400">
+      <img src="assets/shadow.png" alt="Model rendered with shadow mapping" width="400">
     </td>
   </tr>
-     <td>
-      <img src="assets/texture.png" alt="Model vertices displayed as a point cloud" width="400">
+  <tr>
+    <th colspan="2">Textured Rendering</th>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="assets/texture.png" alt="Textured model" width="400">
     </td>
+  </tr>
 </table>
-
 
 
 
