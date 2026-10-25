@@ -12,7 +12,7 @@ A software renderer implemented in C++ by following the
   </tr>
   <tr>
     <td>
-      <img src="assets/default.png" alt="Model rendered with Phong shading" width="400">
+      <img src="assets/phong.png" alt="Model rendered with Phong shading" width="400">
     </td>
     <td>
       <img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="400">
@@ -27,17 +27,8 @@ A software renderer implemented in C++ by following the
       <img src="assets/normals.png" alt="Vertex normals displayed as line segments" width="400">
     </td>
     <td>
-      <img src="assets/shadow.png" alt="Model rendered with shadow mapping" width="400">
+      <img src="assets/texture1.png" alt="Model rendered with shadow mapping" width="400">
     </td>
-  </tr>
-  <tr>
-    <th colspan="2">Textured Rendering</th>
-  </tr>
-  <tr>
-    <td colspan="2" align="center">
-      <img src="assets/texture.png" alt="Textured model" width="400">
-    </td>
-  </tr>
 </table>
 
 
