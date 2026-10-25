@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv) {
   if (argc < 2) {
-      std::cerr << "Usage: " << argv[0] << " [--white] [--wire] [--normals] obj/model.obj ..." << std::endl;
+      std::cerr << "Usage: " << argv[0] << " [--white] [--wire] [--normals] [--grid] obj/model.obj ..." << std::endl;
       return 1;
   }
 
@@ -28,12 +28,16 @@ int main(int argc, char** argv) {
   init_viewport(width/16, height/16, width*7/8, height*7/8);
 
   bool white = false, wireframe = false, normals = false;
+  TGAImage gridtex;
+  bool usegrid = false;
+
   std::vector<Model> models;
   for (int m = 1; m < argc; m++) {
       const std::string arg = argv[m];
       if (arg == "--white") white = true;
       else if (arg == "--wire") wireframe = true;
       else if (arg == "--normals") normals = true;
+      else if (arg == "--grid") usegrid = gridtex.read_tga_file("obj/grid.tga");
       else models.emplace_back(arg);
   }
 
@@ -46,29 +50,27 @@ int main(int argc, char** argv) {
       init_zbuffer(width, height);
 
       for (const Model& model: models) {
-          PhongShader shader(light, model); // one shader per model: it keeps a reference to it
+          PhongShader shader(light, model);
           shader.angle = a;
           shader.white = white;
           shader.wireframe = wireframe;
+          shader.grid = usegrid ? &gridtex : nullptr;
           for (int face=0; face<model.nfaces(); face++) {
               vec4 clip[3];
               for (int i: {0,1,2}) {
-                  vec4 v = rot(model.vert(face, i), a); // w=1, point
+                  vec4 v = rot(model.vert(face, i), a);
                   vec4 vv = ModelView * v;
                   shader.tri[i] = vv;
                   shader.uvs[i] = model.uv(face, i);
                   clip[i] = Perspective * vv;
 
-                  vec4 n = rot(model.normal(face, i), a); // w=0, rotate norm with a model
+                  vec4 n = rot(model.normal(face, i), a);
                   shader.nrm[i] = normalized(ModelView * n);
               }
               rasterize(clip, shader, framebuffer);
           }
       }
 
-      // take each model --> take each triangle in the model --> take three vertices in the triangle --> find pos apply rotation apply view transform
-      // same with normal vector
-      // draw line: line 2 points first point p second point normal coords scale the size
       if (normals) {
           for (const Model& model: models)
               for (int face=0; face<model.nfaces(); face++)

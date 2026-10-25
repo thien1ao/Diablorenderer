@@ -45,8 +45,11 @@ int main(int argc, char** argv) {
   }
 
   std::vector<std::uint8_t> pixels(width*height*3); // array of RGB bytes
+  // MODES
+  TGAImage gridtex;
+  bool hasgrid = gridtex.read_tga_file("obj/grid.tga");
   bool running = true, dragging = false, dirty = true;
-  bool white = false, wireframe = false, normals = false;
+  bool white = false, wireframe = false, normals = false, usegrid = false, points = false;
 
   auto handle = [&](const SDL_Event& e) {
       switch (e.type) {
@@ -56,6 +59,8 @@ int main(int argc, char** argv) {
               if (e.key.keysym.sym == SDLK_w) { wireframe = !wireframe; dirty = true; } // press w wireframe mode dirty=true new frame
               if (e.key.keysym.sym == SDLK_t) { white = !white; dirty = true; }
               if (e.key.keysym.sym == SDLK_n) { normals = !normals; dirty = true; }
+              if (e.key.keysym.sym == SDLK_g) { usegrid = !usegrid && hasgrid; dirty = true; }
+              if (e.key.keysym.sym == SDLK_p) { points = !points; dirty = true; }
               break;
           case SDL_MOUSEBUTTONDOWN: if (e.button.button == SDL_BUTTON_LEFT) dragging = true; break;
           case SDL_MOUSEBUTTONUP:   if (e.button.button == SDL_BUTTON_LEFT) dragging = false; break;
@@ -63,7 +68,7 @@ int main(int argc, char** argv) {
               if (dragging) {
                   yaw   -= e.motion.xrel * 0.01;
                   pitch += e.motion.yrel * 0.01;
-                  pitch = std::clamp(pitch, -1.5, 1.5); // camera position changed
+                  pitch = std::clamp(pitch, -1.5, 1.5);
                   dirty = true;
               }
               break;
@@ -87,9 +92,19 @@ int main(int argc, char** argv) {
       TGAImage framebuffer(width, height, TGAImage::RGB);
       init_zbuffer(width, height);
       for (const Model& model: models) {
+          if (points) {
+              for (int i=0; i<model.nfaces(); i++) {
+                  vec4 p = ModelView * model.vert(i);
+                   double k = std::clamp((p.z + dist + 1.)/2., .2, 1.);
+                  auto b = static_cast<std::uint8_t>(255*k);
+                  point(p, 2, TGAColor{b, b, b, 255}, framebuffer);
+              }
+              continue;
+          }
           PhongShader shader(light, model);
           shader.white = white;
           shader.wireframe = wireframe;
+          shader.grid = usegrid ? &gridtex : nullptr;
           for (int face=0; face<model.nfaces(); face++) {
               vec4 clip[3];
               for (int i: {0,1,2})

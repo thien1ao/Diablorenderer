@@ -14,7 +14,6 @@ class Model {
   std::vector<int> facet_tex = {};
   TGAImage normalmap = {};
   TGAImage diffusemap = {};
-  TGAImage tangentmap = {};
 
 public:
   Model(const std::string filename);
@@ -26,5 +25,4 @@ public:
   vec4 normal(const vec2& uv) const; // normal vector from normal map textures
   vec2 uv(const int iface, const int nthvert) const; // uv coordinates of triangle
   const TGAImage& diffuse() const { return diffusemap; }
-  const TGAImage& tangent() const { return tangentmap; }
 };

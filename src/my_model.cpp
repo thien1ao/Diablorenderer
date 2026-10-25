@@ -3,29 +3,27 @@
 #include <sstream>
 
 Model::Model(const std::string filename) {
-    // open stage, check fail
     std::ifstream in;
     in.open(filename, std::ifstream::in);
     if (in.fail()) return;
 
-    // read file linewise
     std::string line;
     while (std::getline(in, line)) {
         std::istringstream iss(line.c_str());
         char trash;
-        if (!line.compare(0, 2, "v ")) { // compares first 2 charackters returns 0 and !0 --> 1
-            iss >> trash; // skip "v"
+        if (!line.compare(0, 2, "v ")) {
+            iss >> trash;
             vec4 v = {0,0,0,1};
-            for (int i : {0,1,2}) iss >> v[i]; // read 3 coordinates
+            for (int i : {0,1,2}) iss >> v[i];
             verts.push_back(v);
 
         } else if (!line.compare(0, 3, "vn ")) {
-            iss >> trash >> trash; // skip "v" and "n"
+            iss >> trash >> trash;
             vec4 n;
             for (int i : {0,1,2}) iss >> n[i];
             norms.push_back(normalized(n));
         } else if (!line.compare(0, 3, "vt ")) {
-            iss >> trash >> trash; //skip "v" and "t"
+            iss >> trash >> trash;
             vec2 uv;
             for (int i : {0,1}) iss >> uv[i];
             tex.push_back({uv.x, 1-uv.y});
@@ -47,16 +45,14 @@ Model::Model(const std::string filename) {
         }
     }
     std::cerr << "# v# " << nverts() << " f# "  << nfaces() << std::endl;
-    // lambda to build name of texture file based on models file name
-    auto load_texture = [&filename](const std::string suffix, TGAImage& img) { // compiler defins type
-        size_t dot = filename.find_last_of("."); // define file extension
-        if (dot==std::string::npos) return; // dot not found
-        std::string texfile = filename.substr(0,dot) + suffix; // filename=red_bull.obj suffix foo.tga --> texfile red_bull_foo.tga
+    auto load_texture = [&filename](const std::string suffix, TGAImage& img) {
+        size_t dot = filename.find_last_of(".");
+        if (dot==std::string::npos) return;
+        std::string texfile = filename.substr(0,dot) + suffix;
         std::cerr << "texture file" << texfile << "loading" << (img.read_tga_file(texfile.c_str()) ? "ok" : "failed") << std::endl;
     };
     load_texture("_nm.tga", normalmap);
     load_texture("_diffuse.tga", diffusemap);
-    load_texture("nm_tangent.tga", tangentmap);
 }
 
 int Model::nverts() const { return verts.size(); }
