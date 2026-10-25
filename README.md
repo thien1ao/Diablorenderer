@@ -12,7 +12,7 @@ A software renderer implemented in C++ by following the
   </tr>
   <tr>
     <td>
-      <img src="assets/texture.png" alt="Textured model with Phong lighting" width="400">
+      <img src="assets/default.png" alt="Textured model with Phong lighting" width="400">
     </td>
     <td>
       <img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="400">
@@ -30,6 +30,9 @@ A software renderer implemented in C++ by following the
       <img src="assets/points.png" alt="Model vertices displayed as a point cloud" width="400">
     </td>
   </tr>
+     <td>
+      <img src="assets/texture.png" alt="Model vertices displayed as a point cloud" width="400">
+    </td>
 </table>
 
 
