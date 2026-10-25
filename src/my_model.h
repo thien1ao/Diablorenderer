@@ -22,7 +22,7 @@ public:
   vec4 vert(const int i) const;
   vec4 vert(const int iface, const int nthvert) const;
   vec4 normal(const int iface, const int nthvert) const;
-  vec4 normal(const vec2& uv) const; // normal vector from normal map textures
-  vec2 uv(const int iface, const int nthvert) const; // uv coordinates of triangle
+  vec4 normal(const vec2& uv) const;
+  vec2 uv(const int iface, const int nthvert) const;
   const TGAImage& diffuse() const { return diffusemap; }
 };

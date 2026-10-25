@@ -84,6 +84,10 @@ int main(int argc, char** argv) {
 
       auto t0 = std::chrono::steady_clock::now();
 
+      // pass 1: depth from the light (models don't move, but build_shadow_map also resets the camera matrices)
+      const ShadowMap shadow = build_shadow_map(models, light, center, up, 0., 1024);
+
+      // pass 2: camera
       const vec3 eye = center + vec3{std::cos(pitch)*std::sin(yaw), std::sin(pitch), std::cos(pitch)*std::cos(yaw)} * dist;
       lookat(eye, center, up);
       init_perspective(norm(eye-center));
@@ -101,7 +105,7 @@ int main(int argc, char** argv) {
               }
               continue;
           }
-          PhongShader shader(light, model);
+          PhongShader shader(light, model, &shadow);
           shader.white = white;
           shader.wireframe = wireframe;
           shader.grid = usegrid ? &gridtex : nullptr;

@@ -38,7 +38,7 @@ void rasterize(const Triangle &clip, const IShader &shader, TGAImage &framebuffe
 
     auto [bbminx,bbmaxx] = std::minmax({screen[0].x, screen[1].x, screen[2].x});
     auto [bbminy,bbmaxy] = std::minmax({screen[0].y, screen[1].y, screen[2].y});
-    const mat<3,3> ABCit = ABC.invert_transpose(); // same for every pixel of the triangle
+    const mat<3,3> ABCit = ABC.invert_transpose();
 #pragma omp parallel for
     for (int x=std::max<int>(bbminx, 0); x<=std::min<int>(bbmaxx, framebuffer.width()-1); x++) {
         for (int y=std::max<int>(bbminy, 0); y<=std::min<int>(bbmaxy, framebuffer.height()-1); y++) {
