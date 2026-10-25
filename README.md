@@ -12,17 +12,36 @@ by Dmitry Sokolov (ssloy), extended with an interactive SDL2 viewer.
 - Vertex normal visualization
 - White-material mode for inspecting lighting
 
-### Textured Rendering
+## Gallery
 
-<img src="assets/texture.png" alt="Textured model with Phong lighting and normal mapping" width="700">
+<table>
+  <tr>
+    <th>Textured Rendering</th>
+    <th>Wireframe Overlay</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="assets/texture.png" alt="Textured model with Phong lighting" width="400">
+    </td>
+    <td>
+      <img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="400">
+    </td>
+  </tr>
+  <tr>
+    <th>Vertex Normal Visualization</th>
+    <th>Point Cloud View</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="assets/normals.png" alt="Model with vertex normals displayed" width="400">
+    </td>
+    <td>
+      <img src="assets/points.png" alt="Model vertices displayed as a point cloud" width="400">
+    </td>
+  </tr>
+</table>
 
-### Wireframe Overlay
 
-<img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="700">
-
-### Normal Visualization
-
-<img src="assets/normals.png" alt="Model with vertex normals displayed as red line segments" width="700">
 
 
 
