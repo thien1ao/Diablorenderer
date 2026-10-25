@@ -5,8 +5,6 @@ A software renderer implemented in C++ by following the
 
 ## Progress
 
-## Progress
-
 <table>
   <tr>
     <th>Phong Shading</th>
