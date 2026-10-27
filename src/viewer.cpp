@@ -13,6 +13,7 @@
 #include "phong_shader.h"
 #include "ao.h"
 #include "overlays.h"
+#include "sobel.h"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -49,7 +50,7 @@ int main(int argc, char** argv) {
   std::vector<std::uint8_t> pixels(width*height*3);
 
   bool running = true, dragging = false, dirty = true;
-  bool white = false, wireframe = false, normals = false, points = false;
+  bool white = false, wireframe = false, normals = false, points = false, tune_shading = false;
 
   auto handle = [&](const SDL_Event& e) {
       switch (e.type) {
@@ -60,6 +61,8 @@ int main(int argc, char** argv) {
               if (e.key.keysym.sym == SDLK_t) { white = !white; dirty = true; }
               if (e.key.keysym.sym == SDLK_n) { normals = !normals; dirty = true; }
               if (e.key.keysym.sym == SDLK_p) { points = !points; dirty = true; }
+              if (e.key.keysym.sym == SDLK_i) { tune_shading = !tune_shading; dirty = true; }
+
               break;
           case SDL_MOUSEBUTTONDOWN: if (e.button.button == SDL_BUTTON_LEFT) dragging = true; break;
           case SDL_MOUSEBUTTONUP:   if (e.button.button == SDL_BUTTON_LEFT) dragging = false; break;
@@ -78,6 +81,7 @@ int main(int argc, char** argv) {
   std::vector<std::vector<float>> occlusion;
   for (const Model& m : models) {
       std::vector<float> tmp(m.nfaces()*3);
+      #pragma omp parallel for
       for (int f=0; f<m.nfaces(); f++)
           for (int i=0; i<3; i++)
               tmp[f*3 + i] = ao.compute(m, f, i);
@@ -108,16 +112,18 @@ int main(int argc, char** argv) {
               const Model& model = models[i];
               PhongShader shader(light, model); // shader creation
               shader.white = white;
+              shader.tune_shading = tune_shading;
               shader.occlusion = &occlusion[i];
 
               for (int face=0; face<model.nfaces(); face++) {
                   vec4 clip[3];
                   for (int k: {0,1,2})
-                      clip[k] = shader.vertex(face, k);
+                      clip[k] = shader.vertex(face, k); // PRIMIIVE ASSEMBLE
                   rasterize(clip, shader, framebuffer);
               }
           }
       }
+      if (tune_shading) draw_sobel_edges(framebuffer);
       if (wireframe) draw_wireframe(models, framebuffer);
       if (normals)   draw_normals(models, framebuffer);
 

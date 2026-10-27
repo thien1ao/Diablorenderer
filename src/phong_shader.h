@@ -16,11 +16,12 @@ struct PhongShader : IShader {
     vec2 uvs[3];
     vec4 l;
 
-    const std::vector<float>* occlusion = nullptr; // AO from viewer
+    const std::vector<float>* occlusion = nullptr; // AO
     float occ[3] = {1.f, 1.f, 1.f};
 
     double angle = 0;
     bool white = false;
+    bool tune_shading = false;
 
     PhongShader(const vec3 light, const Model &m)
       : model(m), ModelViewIT(ModelView.invert_transpose()) {
@@ -45,7 +46,7 @@ struct PhongShader : IShader {
 
       vec2 uv = uvs[0]*bc[0] +uvs[1]*bc[1] + uvs[2]*bc[2];
       TGAColor color = white ? TGAColor{255, 255, 255, 255} : sample2D(model.diffuse(), uv);
-
+      // AMBIENT OCCLUSSION
       double ao = occ[0] * bc[0] + occ[1] * bc[1] + occ[2] * bc[2];
 
       vec4 n = normalized(B.transpose() * rot(model.normal(uv), angle));
@@ -53,13 +54,21 @@ struct PhongShader : IShader {
 
       double kd = 0.4;
       double ks = 0.7;
-      double ambient = .6;
+      double ambient = .2;
       double diff = std::max(0., n * l);
       double spec = std::pow(std::max(r.z, 0.),40);
 
-      double intencity = std::min(1., ambient * ao + 0.2 + (kd * diff + ks * spec));
+      double computed_intencity = std::min(1., ambient * ao + 0.2 + (kd * diff + ks * spec));
+
+      if (tune_shading) {
+          if      (computed_intencity < 0.3) computed_intencity = 0.2;
+          else if (computed_intencity < 0.5) computed_intencity = 0.4;
+          else if (computed_intencity < 0.8) computed_intencity = 0.7;
+          else                               computed_intencity = 1.0;
+      }
+
       for (int channel : {0,1,2}) {
-          color[channel] = static_cast<uint8_t>(std::min(255., color[channel]*intencity));
+          color[channel] = static_cast<uint8_t>(std::min(255., color[channel]*computed_intencity));
       }
 
       return {false, color};
