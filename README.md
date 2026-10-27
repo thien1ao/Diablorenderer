@@ -18,6 +18,7 @@ A renderer implemented in C++ by following the
       <img src="assets/wireframe.png" alt="Model with triangle edges highlighted" width="400">
     </td>
   </tr>
+
   <tr>
     <th>Normals Rendering</th>
     <th>Texture Rendering</th>
@@ -29,17 +30,19 @@ A renderer implemented in C++ by following the
     <td>
       <img src="assets/texture.png" alt="Model rendered with texture" width="400">
     </td>
-    <tr>
-    <th>Ambient Occlusion</th>
-    <th></th>
+  </tr>
+
+  <tr>
+    <th colspan="2">Ambient Occlusion</th>
   </tr>
   <tr>
     <td>
-      <img src="assets/ao_front.png" alt="Vertex normals displayed as line segments" width="400">
+      <img src="assets/ao_front.png" alt="Ambient occlusion — front view" width="400">
     </td>
     <td>
-      <img src="assets/ao_back.png" alt="Model rendered with texture" width="400">
+      <img src="assets/ao_back.png" alt="Ambient occlusion — back view" width="400">
     </td>
+  </tr>
 </table>
 
 
