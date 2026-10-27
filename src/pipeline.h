@@ -22,6 +22,4 @@ struct IShader {
 
 typedef vec4 Triangle[3];
 void rasterize(const Triangle& clip, const IShader& shader, TGAImage& framebuffer);
-void point(const vec4 p, const int size, const TGAColor color, TGAImage& framebuffer);
-void line(const vec4 a, const vec4 b, const TGAColor color, TGAImage& framebuffer);
 

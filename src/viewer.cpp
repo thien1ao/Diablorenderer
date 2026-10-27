@@ -1,33 +1,35 @@
 #include <SDL2/SDL.h>
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "my_model.h"
 #include "geometry.h"
 #include "pipeline.h"
 #include "phong_shader.h"
+#include "ao.h"
+#include "overlays.h"
 
-// Interactive viewer: drag with left mouse button to orbit, wheel to zoom, W wireframe, T texture on/off, N normals, Esc to quit.
 int main(int argc, char** argv) {
   if (argc < 2) {
       std::cerr << "Usage: " << argv[0] << " obj/model.obj ..." << std::endl;
       return 1;
   }
 
-  constexpr int width = 800;
-  constexpr int height = 800;
-  constexpr vec3 center{0, 0, 0};
-  constexpr vec3 up{0, 1, 0};
+  constexpr int width = 1000;
+  constexpr int height = 1000;
+  constexpr vec3 center  {0, 0, 0};
+  constexpr vec3 up      {0, 1, 0};
   const vec3 light = normalized(vec3{1,1,1});
 
   std::vector<Model> models;
   for (int m = 1; m < argc; m++)
       models.emplace_back(argv[m]);
 
-  // camera on a sphere around center; starts at the same eye{-1,0,2} as my_renderer
   double yaw = std::atan2(-1., 2.);
   double pitch = 0;
   double dist = std::sqrt(5.);
@@ -44,22 +46,19 @@ int main(int argc, char** argv) {
       return 1;
   }
 
-  std::vector<std::uint8_t> pixels(width*height*3); // array of RGB bytes
-  // MODES
-  TGAImage gridtex;
-  bool hasgrid = gridtex.read_tga_file("obj/grid.tga");
+  std::vector<std::uint8_t> pixels(width*height*3);
+
   bool running = true, dragging = false, dirty = true;
-  bool white = false, wireframe = false, normals = false, usegrid = false, points = false;
+  bool white = false, wireframe = false, normals = false, points = false;
 
   auto handle = [&](const SDL_Event& e) {
       switch (e.type) {
           case SDL_QUIT: running = false; break;
           case SDL_KEYDOWN:
               if (e.key.keysym.sym == SDLK_ESCAPE) running = false;
-              if (e.key.keysym.sym == SDLK_w) { wireframe = !wireframe; dirty = true; } // press w wireframe mode dirty=true new frame
+              if (e.key.keysym.sym == SDLK_w) { wireframe = !wireframe; dirty = true; }
               if (e.key.keysym.sym == SDLK_t) { white = !white; dirty = true; }
               if (e.key.keysym.sym == SDLK_n) { normals = !normals; dirty = true; }
-              if (e.key.keysym.sym == SDLK_g) { usegrid = !usegrid && hasgrid; dirty = true; }
               if (e.key.keysym.sym == SDLK_p) { points = !points; dirty = true; }
               break;
           case SDL_MOUSEBUTTONDOWN: if (e.button.button == SDL_BUTTON_LEFT) dragging = true; break;
@@ -75,6 +74,16 @@ int main(int argc, char** argv) {
       }
   };
 
+  AO ao;
+  std::vector<std::vector<float>> occlusion;
+  for (const Model& m : models) {
+      std::vector<float> tmp(m.nfaces()*3);
+      for (int f=0; f<m.nfaces(); f++)
+          for (int i=0; i<3; i++)
+              tmp[f*3 + i] = ao.compute(m, f, i);
+      occlusion.push_back(tmp);
+  }
+
   while (running) {
       SDL_Event e;
       if (!dirty && SDL_WaitEvent(&e)) handle(e);
@@ -84,10 +93,6 @@ int main(int argc, char** argv) {
 
       auto t0 = std::chrono::steady_clock::now();
 
-      // pass 1: depth from the light (models don't move, but build_shadow_map also resets the camera matrices)
-      const ShadowMap shadow = build_shadow_map(models, light, center, up, 0., 1024);
-
-      // pass 2: camera
       const vec3 eye = center + vec3{std::cos(pitch)*std::sin(yaw), std::sin(pitch), std::cos(pitch)*std::cos(yaw)} * dist;
       lookat(eye, center, up);
       init_perspective(norm(eye-center));
@@ -95,36 +100,26 @@ int main(int argc, char** argv) {
 
       TGAImage framebuffer(width, height, TGAImage::RGB);
       init_zbuffer(width, height);
-      for (const Model& model: models) {
-          if (points) {
-              for (int i=0; i<model.nfaces(); i++) {
-                  vec4 p = ModelView * model.vert(i);
-                   double k = std::clamp((p.z + dist + 1.)/2., .2, 1.);
-                  auto b = static_cast<std::uint8_t>(255*k);
-                  point(p, 2, TGAColor{b, b, b, 255}, framebuffer);
+
+      if (points) {
+          draw_points(models, dist, framebuffer);
+      } else {
+          for (size_t i=0; i < models.size(); i++) {
+              const Model& model = models[i];
+              PhongShader shader(light, model); // shader creation
+              shader.white = white;
+              shader.occlusion = &occlusion[i];
+
+              for (int face=0; face<model.nfaces(); face++) {
+                  vec4 clip[3];
+                  for (int k: {0,1,2})
+                      clip[k] = shader.vertex(face, k);
+                  rasterize(clip, shader, framebuffer);
               }
-              continue;
-          }
-          PhongShader shader(light, model, &shadow);
-          shader.white = white;
-          shader.wireframe = wireframe;
-          shader.grid = usegrid ? &gridtex : nullptr;
-          for (int face=0; face<model.nfaces(); face++) {
-              vec4 clip[3];
-              for (int i: {0,1,2})
-                  clip[i] = shader.vertex(face, i);
-              rasterize(clip, shader, framebuffer);
           }
       }
-      if (normals) {
-          for (const Model& model: models)
-              for (int face=0; face<model.nfaces(); face++)
-                  for (int i: {0,1,2}) {
-                      vec4 p = ModelView * model.vert(face, i);
-                      vec4 n = normalized(ModelView * model.normal(face, i));
-                      line(p, p + n*.05, TGAColor{60, 60, 255, 255}, framebuffer); // BGRA: red
-                  }
-      }
+      if (wireframe) draw_wireframe(models, framebuffer);
+      if (normals)   draw_normals(models, framebuffer);
 
       for (int y=0; y<height; y++)
           for (int x=0; x<width; x++) {

@@ -27,7 +27,7 @@ A renderer implemented in C++ by following the
       <img src="assets/normals.png" alt="Vertex normals displayed as line segments" width="400">
     </td>
     <td>
-      <img src="assets/texture1.png" alt="Model rendered with shadow mapping" width="400">
+      <img src="assets/texture1.png" alt="Model rendered with texture" width="400">
     </td>
 </table>
 

@@ -12,7 +12,7 @@ template<int n> struct vec {
 template<int n> double operator*(const vec<n>& lhs, const vec<n>& rhs) {
     double ret = 0;                         // N.B. Do not ever, ever use such for loops! They are highly confusing.
     for (int i=n; i--; ret+=lhs[i]*rhs[i]); // Here I used them as a tribute to old-school game programmers fighting for every CPU cycle.
-    return ret;                             // Once upon a time reverse loops were faster than the normal ones, it is not the case anymore.
+    return ret;
 }
 
 template<int n> vec<n> operator+(const vec<n>& lhs, const vec<n>& rhs) {
