@@ -43,6 +43,17 @@ A renderer implemented in C++ by following the
       <img src="assets/ao_back.png" alt="Ambient occlusion — back view" width="400">
     </td>
   </tr>
+  <tr>
+    <th colspan="2">Tune Shading</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="assets/tune_shading.png" alt="Ambient occlusion — front view" width="400">
+    </td>
+    <td>
+      <img src="assets/tune_shading_texture.png" alt="Ambient occlusion — back view" width="400">
+    </td>
+  </tr>
 </table>
 
 
